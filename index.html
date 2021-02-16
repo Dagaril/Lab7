@@ -95,8 +95,12 @@
       // From the 4 CRUD actions, this is the READ action, and uses the GET http method.
       // The main difference from fetchAll() will be the URL you request from; check
       // the writeup to view the URL pattern for fetch one and fetch all
-      function fetchOne() {
-        // TODO
+      async function fetchOne() {
+        let endPoint = document.getElementById('endpoint').value;
+        let output = document.getElementById('output');
+        let recId = prompt("Enter record Id");
+        let response = await fetch(endPoint + '/'+recId);
+        output.textContent = await response.text();
       }
 
       // This function should use fetch to create one entry in the given endpoint.
