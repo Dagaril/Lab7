@@ -78,6 +78,8 @@
     // The main difference from fetchOne() will be the URL you request from; check
     // the writeup to view the URL pattern for fetch one and fetch all
     async function fetchAll() {
+      document.getElementById("recordForm").style.display = 'none';
+      document.getElementById("recordIDcontainer").style.display = 'none';
       let endPoint = document.getElementById('endpoint').value;
       let output = document.getElementById('output');
       await fetch(endPoint)
@@ -101,6 +103,8 @@
     // The main difference from fetchAll() will be the URL you request from; check
     // the writeup to view the URL pattern for fetch one and fetch all
     async function fetchOne() {
+      document.getElementById("recordForm").style.display = 'none';
+      document.getElementById("recordIDcontainer").style.display = 'none';
       let endPoint = document.getElementById('endpoint').value;
       let output = document.getElementById('output');
       let recId = prompt("Enter record Id");
@@ -123,7 +127,11 @@
     // From the 4 CRUD actions, this is the CREATE action, and uses the POST http method.
     // The main difference from updateRecord() will be the URL you send data to; check
     // the writeup to view the URL pattern for create and update
-    async function createRecord() {
+    function createRecord(type) {
+      if (type == "show") {
+        document.getElementById("recordForm").style.display = 'inline';
+        return;
+      }
       let endPoint = document.getElementById('endpoint').value;
       let author = document.getElementById('author').value;
       let title = document.getElementById('title').value;
@@ -137,10 +145,14 @@
           "Content-Type": "application/json; charset=utf-8"
         }
       })
-      .then(async function(response){
-        document.getElementById('output').textContent = await response.text();
-      });
-      
+        .then(async function (response) {
+          if (response.status !== 201) {
+            output.textContent = "Network Error: " + response.status;
+          } else {
+            document.getElementById('output').textContent = await response.text();
+          }
+        });
+
 
     }
 
@@ -148,7 +160,12 @@
     // From the 4 CRUD actions, this is the UPDATE action, and uses the PUT http method.
     // The main difference from createRecord() will be the URL you send data to; check
     // the writeup to view the URL pattern for create and update
-    function updateRecord() {
+    function updateRecord(type) {
+      if (type == "show") {
+        document.getElementById("recordForm").style.display = 'inline';
+        document.getElementById("recordIDcontainer").style.display = 'inline';
+        return;
+      }
       let endPoint = document.getElementById('endpoint').value;
       let recId = document.getElementById('recordID');
       let author = document.getElementById('author').value;
@@ -163,9 +180,13 @@
           "Content-Type": "application/json; charset=utf-8"
         }
       })
-      .then(async function(response){
-        document.getElementById('output').textContent = await response.text();
-      });
+        .then(async function (response) {
+          if (response.status !== 200) {
+            output.textContent = "Network Error: " + response.status;
+          } else {
+            document.getElementById('output').textContent = await response.text();
+          }
+        });
     }
 
     // This function should use fetch to delete one existing entry in the given endpoint.
@@ -174,7 +195,20 @@
     // request; check the writeup to view the URL pattern for get one and delete. THERE IS NO 
     // delete all, only delete one.
     function deleteRecord() {
-      // TODO
+      document.getElementById("recordForm").style.display = 'none';
+        document.getElementById("recordIDcontainer").style.display = 'none';
+      let endPoint = document.getElementById('endpoint').value;
+      let recId = prompt("Enter record Id to delete");
+      fetch(endPoint + '/' + recId, {
+        method: 'DELETE'
+      })
+        .then(async function (response) {
+          if (response.status !== 200) {
+            output.textContent = "Network Error: " + response.status;
+          } else {
+            fetchAll();
+          }
+        });
     }
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -203,24 +237,6 @@
               break;
             default:
               alert("Error: Illegal Action");
-          }
-        });
-
-      document
-        .getElementById("action")
-        .addEventListener('change', function () {
-          switch (this.value) {
-            case "Create":
-              document.getElementById("recordForm").style.display = 'inline';
-              break;
-            case "Update":
-              document.getElementById("recordForm").style.display = 'inline';
-              document.getElementById("recordIDcontainer").style.display = 'inline';
-              break;
-            default:
-              document.getElementById("recordForm").style.display = 'none';
-              document.getElementById("recordIDcontainer").style.display = 'none';
-              break;
           }
         });
 
