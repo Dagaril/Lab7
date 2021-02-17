@@ -123,8 +123,25 @@
     // From the 4 CRUD actions, this is the CREATE action, and uses the POST http method.
     // The main difference from updateRecord() will be the URL you send data to; check
     // the writeup to view the URL pattern for create and update
-    function createRecord() {
-      // TODO
+    async function createRecord() {
+      let endPoint = document.getElementById('endpoint').value;
+      let author = document.getElementById('author').value;
+      let title = document.getElementById('title').value;
+      let formData = {};
+      formData["author"] = author;
+      formData["title"] = title;
+      fetch(endPoint, {
+        method: 'POST',
+        body: JSON.stringify(formData),
+        headers: {
+          "Content-Type": "application/json; charset=utf-8"
+        }
+      })
+      .then(async function(response){
+        document.getElementById('output').textContent = await response.text();
+      });
+      
+
     }
 
     // This function should use fetch to update one existing entry in the given endpoint.
@@ -132,7 +149,23 @@
     // The main difference from createRecord() will be the URL you send data to; check
     // the writeup to view the URL pattern for create and update
     function updateRecord() {
-      // TODO
+      let endPoint = document.getElementById('endpoint').value;
+      let recId = document.getElementById('recordID');
+      let author = document.getElementById('author').value;
+      let title = document.getElementById('title').value;
+      let formData = {};
+      formData["author"] = author;
+      formData["title"] = title;
+      fetch(endPoint + '/' + recId.value, {
+        method: 'PUT',
+        body: JSON.stringify(formData),
+        headers: {
+          "Content-Type": "application/json; charset=utf-8"
+        }
+      })
+      .then(async function(response){
+        document.getElementById('output').textContent = await response.text();
+      });
     }
 
     // This function should use fetch to delete one existing entry in the given endpoint.
@@ -170,6 +203,24 @@
               break;
             default:
               alert("Error: Illegal Action");
+          }
+        });
+
+      document
+        .getElementById("action")
+        .addEventListener('change', function () {
+          switch (this.value) {
+            case "Create":
+              document.getElementById("recordForm").style.display = 'inline';
+              break;
+            case "Update":
+              document.getElementById("recordForm").style.display = 'inline';
+              document.getElementById("recordIDcontainer").style.display = 'inline';
+              break;
+            default:
+              document.getElementById("recordForm").style.display = 'none';
+              document.getElementById("recordIDcontainer").style.display = 'none';
+              break;
           }
         });
 
